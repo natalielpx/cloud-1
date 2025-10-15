@@ -1,0 +1,126 @@
+name: cloud-1
+
+services:
+
+  mariadb:
+    build: ./services/mariadb
+    image: mariadb-image
+    container_name: mariadb
+    restart: always
+    volumes:
+      - database:/var/lib/mysql
+    networks:
+      - docker-network
+    expose:
+      - "3306"
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_HOST: ${DB_HOST}
+    secrets:
+      - db-password
+      - db-root-password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=$(cat /run/secrets/db-root-password)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  wordpress:
+    build: ./services/wordpress
+    image: wordpress-image
+    container_name: wordpress
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: always
+    volumes:
+      - wp-content:/var/www/html
+    networks:
+      - docker-network
+    expose:
+      - "9000"
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_HOST: ${DB_HOST}
+      DB_PASSWORD_FILE: /run/secrets/db-password
+      WP_EMAIL: ${WP_EMAIL}
+      WP_TITLE: ${WP_TITLE}
+      WP_ADMIN: ${WP_ADMIN}
+      DOMAIN_NAME: ${DOMAIN_NAME}
+    secrets:
+      - db-password
+      - wp-admin-password
+    healthcheck:
+      test: ["CMD", "php-fpm8.2", "-t"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  phpmyadmin:
+    build: ./services/phpmyadmin
+    image: phpmyadmin-image
+    container_name: phpmyadmin
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: always
+    volumes:
+      - pma-content:/var/www/phpmyadmin
+    networks:
+      - docker-network
+    expose:
+      - "9000"
+    environment:
+      PMA_USER: ${DB_USER}
+      PMA_HOST: ${DB_HOST}
+    secrets:
+      - db-password
+      - wp-admin-password
+    healthcheck:
+      test: ["CMD", "php-fpm8.2", "-t"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  nginx:
+    build: ./services/nginx
+    image: nginx-image
+    container_name: nginx
+    depends_on:
+      wordpress:
+        condition: service_healthy
+      phpmyadmin:
+        condition: service_healthy
+    restart: always
+    volumes:
+      - wp-content:/var/www/html
+      - pma-content:/var/www/phpmyadmin
+    networks: 
+      - docker-network
+    ports:
+      - "443:443"
+    secrets:
+      - server-crt
+      - server-key
+
+volumes:
+  database:
+  wp-content:
+  pma-content:
+
+networks:
+  docker-network:
+
+secrets:
+  db-password:
+    file: ./secrets/db-password.txt
+  db-root-password:
+    file: ./secrets/db-root-password.txt
+  server-crt:
+    file: ./secrets/server.crt
+  server-key:
+    file: ./secrets/server.key
+  wp-admin-password:
+    file: ./secrets/wp-admin-password.txt

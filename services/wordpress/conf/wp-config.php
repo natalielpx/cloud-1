@@ -104,3 +104,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /** Sets up WordPress vars and included files. */
 require_once ABSPATH . 'wp-settings.php';
+
+/** Sets up Site URL */
+define('WP_HOME', 'https://' . getenv('DOMAIN_NAME'));
+define('WP_SITEURL', 'https://' . getenv('DOMAIN_NAME'));

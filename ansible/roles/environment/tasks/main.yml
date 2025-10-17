@@ -1,0 +1,34 @@
+# Operating System: Ubuntu
+- name: Check that OS is Ubuntu-based
+  assert:
+    that: ansible_distribution == "Ubuntu"
+    fail_msg: "This playbook requires a Ubuntu-based OS"
+    success_msg: "Ubuntu OS Detected. Proceeding with playbook..."
+
+# Python 3 installed
+- name: Check if Python 3 is installed
+  raw: python3 --version
+  register: python_check
+  ignore_errors: yes
+- name: Install Python 3 if missing
+  when: python_check.rc != 0
+  raw: apt-get update && apt-get install -y python3
+
+# apt module dependencies installed
+- name: Install apt module dependencies - python3-apt, aptitude
+  raw: apt-get update && apt-get install -y python3-apt aptitude
+
+# UFW enabled
+- name: Ensure UFW is installed
+  apt:
+    name: ufw
+    state: present
+    update_cache: yes       # ensure package list is up to date before installation
+- name: Set UFW default policy to allow outgoing and deny incoming
+  ufw:
+    state: enabled          # turns firewall on
+    policy: deny            # sets default rule for incoming traffic to `deny`
+- name: Allow SSH through UFW
+  ufw:
+    rule: allow             # opens criteria-matching traffic
+    name: OpenSSH

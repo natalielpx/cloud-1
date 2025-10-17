@@ -1,0 +1,83 @@
+# reference: https://docs.docker.com/engine/install/ubuntu/#uninstall-docker-engine
+
+# Check Docker
+- name: Check if Docker is installed
+  command: docker --version
+  register: docker_check
+  ignore_errors: yes
+
+# Install Docker
+- name: Install Docker
+  block:
+
+    # Remove conflicting packages
+    - name: Remove any conflicting Docker-related packages
+      raw: |
+        for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do
+          apt-get remove -y $pkg || true
+        done
+      ignore_errors: yes
+
+    # Remove old repo file
+    - name: Remove old Docker repo file if exists
+      file:
+        path: /etc/apt/sources.list.d/docker.list
+        state: absent
+
+    # Install dependencies
+    - name: Install dependencies
+      apt: 
+        pkg:
+          - ca-certificates
+        state: present
+
+    # Get GPG key
+    - name: Ensure /etc/apt/keyrings directory exists with correct permissions
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+        owner: root
+        group: root
+    - name: Download Docker's official GPG key
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    # Create Docker repository
+    - name: Get Architecture
+      set_fact:
+        docker_arch: >-
+          {% if ansible_architecture == "x86_64" %}amd64{% elif ansible_architecture == "aarch64" %}arm64{% else %}{{ ansible_architecture }}{% endif %}
+    - name: Get Repository Name
+      set_fact:
+        docker_repo: "deb [arch={{ docker_arch }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
+    - name: Create Docker Repository
+      apt_repository:
+        # {{ ansible_architecture }} = amd64 / arm64
+        # {{ ansible_lsb.codename }} = OS codename (e.g. focal or bullseye)
+        repo: "{{ docker_repo }}"
+        state: present
+        filename: docker
+        update_cache: yes
+
+    # Install Docker
+    - name: Install Docker
+      apt:
+        pkg:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        state: present
+
+  when: docker_check.failed
+
+# Launch Docker
+- name: Launch Docker
+  systemd:
+    name: docker
+    state: started      # starts Docker right now
+    enabled: yes        # ensures Docker starts on boot

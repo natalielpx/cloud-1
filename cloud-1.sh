@@ -25,11 +25,17 @@ echo "Ansible:	$(ansible --version | head -n 1)"
 ansible-galaxy collection install community.crypto community.docker community.general
 
 # CREATE: inventory
-echo "[cloud1hosts]"	> "$INVENTORY"
+echo "[cloud1hosts]" > "$INVENTORY"
 for arg in "$@"; do
-	echo "$arg ansible_user=root"			>> "$INVENTORY"
+	echo "$arg ansible_user=root" >> "$INVENTORY"
 done
 echo "Inventory:	$INVENTORY"
+
+# CREATE: .env for each host
+for arg in "$@"; do
+	cp .env ".env.$arg"
+	echo "$arg" >> ".env.$arg"
+done
 
 # CHECK: playbook
 if [ ! -f $PLAYBOOK ]; then
@@ -41,3 +47,8 @@ echo "Playbook:	$PLAYBOOK"
 # RUN
 echo "Running:	ansible-playbook -i $INVENTORY $PLAYBOOK"
 ansible-playbook -i "$INVENTORY" "$PLAYBOOK"
+
+# REMOVE GENERATED ENV FILES
+for arg in "$@"; do
+    [ -f ".env.$arg" ] && rm ".env.$arg"
+done

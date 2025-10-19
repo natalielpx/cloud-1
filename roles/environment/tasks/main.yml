@@ -10,6 +10,7 @@
   raw: python3 --version
   register: python_check
   ignore_errors: yes
+  changed_when: false
 - name: Install Python 3 if missing
   when: python_check.rc != 0
   raw: apt-get update && apt-get install -y python3
@@ -17,6 +18,7 @@
 # apt module dependencies installed
 - name: Install apt module dependencies - python3-apt, aptitude
   raw: apt-get update && apt-get install -y python3-apt aptitude
+  changed_when: false
 
 # UFW enabled
 - name: Ensure UFW is installed

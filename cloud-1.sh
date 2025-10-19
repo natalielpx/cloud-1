@@ -2,9 +2,8 @@
 set -e
 
 # VARIABLES
-ANSIBLE_DIR="./ansible"
-INVENTORY="$ANSIBLE_DIR/inventory.ini"
-PLAYBOOK="$ANSIBLE_DIR/playbook.yml"
+INVENTORY="./inventory.ini"
+PLAYBOOK="./playbook.yml"
 
 if [ $# -eq 0 ]; then
 	echo "ERROR: Please enter server IP"
@@ -33,8 +32,8 @@ echo "Inventory:	$INVENTORY"
 
 # CREATE: .env for each host
 for arg in "$@"; do
-	cp .env ".env.$arg"
-	echo "$arg" >> ".env.$arg"
+	cp .env "roles/application/files/.env.$arg"
+	echo "$arg" >> "roles/application/files/.env.$arg"
 done
 
 # CHECK: playbook
@@ -50,5 +49,5 @@ ansible-playbook -i "$INVENTORY" "$PLAYBOOK"
 
 # REMOVE GENERATED ENV FILES
 for arg in "$@"; do
-    [ -f ".env.$arg" ] && rm ".env.$arg"
+    [ -f ".env.$arg" ] && rm "roles/application/files/.env.$arg"
 done

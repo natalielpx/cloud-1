@@ -5,6 +5,7 @@
   command: docker --version
   register: docker_check
   ignore_errors: yes
+  changed_when: false
 
 # Install Docker
 - name: Install Docker

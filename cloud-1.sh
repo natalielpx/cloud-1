@@ -3,7 +3,8 @@ set -e
 
 # VARIABLES
 INVENTORY="./inventory.ini"
-PLAYBOOK="./playbook.$ymlFILES_DIR"
+PLAYBOOK="./playbook.yml"
+FILES_DIR="./roles/application/files"
 
 if [ $# -eq 0 ]; then
 	echo "ERROR: Please enter server IP"

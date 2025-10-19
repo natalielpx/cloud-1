@@ -1,31 +1,40 @@
-# Operating System: Ubuntu
+# ROLE: Environment
+# Checks essential prerequisites
+# Installs required dependencies
+
+# Checks that server machine runs on Ubuntu
+# Prints corresponding message
+# assert: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/assert_module.html#synopsis
 - name: Check that OS is Ubuntu-based
   assert:
     that: ansible_distribution == "Ubuntu"
     fail_msg: "This playbook requires a Ubuntu-based OS"
     success_msg: "Ubuntu OS Detected. Proceeding with playbook..."
 
-# Python 3 installed
+# Ensures Python 3 is installed on server machine
+# raw:
 - name: Check if Python 3 is installed
   raw: python3 --version
-  register: python_check
-  ignore_errors: yes
-  changed_when: false
+  register: python_check              # variable to store result
+  ignore_errors: yes                  # continues even if python3 is missing
+  changed_when: false                 # marks as changed when python3 is missing
 - name: Install Python 3 if missing
-  when: python_check.rc != 0
+  when: python_check.rc != 0          # return code
   raw: apt-get update && apt-get install -y python3
 
-# apt module dependencies installed
+# Ensures apt module dependencies are installed
 - name: Install apt module dependencies - python3-apt, aptitude
   raw: apt-get update && apt-get install -y python3-apt aptitude
-  changed_when: false
+  changed_when: false       # marks as changed when dependencies are actively being installed
 
-# UFW enabled
+# Enables UFW for SSH and denies all other connections
+# apt: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+# ufw: https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html
 - name: Ensure UFW is installed
   apt:
     name: ufw
-    state: present
-    update_cache: yes       # ensure package list is up to date before installation
+    state: present          # ensures package is installed but does not update
+    update_cache: yes       # ensures package list is up to date before installation
 - name: Set UFW default policy to allow outgoing and deny incoming
   ufw:
     state: enabled          # turns firewall on
@@ -33,4 +42,4 @@
 - name: Allow SSH through UFW
   ufw:
     rule: allow             # opens criteria-matching traffic
-    name: OpenSSH
+    name: OpenSSH           # adds OpenSSH as allowed traffic

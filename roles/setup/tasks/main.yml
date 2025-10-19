@@ -1,11 +1,22 @@
+# ROLE: Setup
+# Ensures target host’s SSH key is known before connecting
+# If not yet in known_hosts
+# temporarily disables strict host key checking to allow first connection
+
+# Checks if target host is a known host of server machine
 - name: Check known_hosts for {{ inventory_hostname }}
   local_action: shell ssh-keygen -F {{ inventory_hostname }}
-  register: has_entry_in_known_hosts_file
-  changed_when: false
-  ignore_errors: true
+  register: is_known_host
+  ignore_errors: true               # Continues even if the host is not found in known_hosts
+  changed_when: false               # Prevents the task from being marked as "changed"
+
+# When (if) target is not a known host of server machine
+# Omits host key check to allow first connection
 - name: Ignore host key for {{ inventory_hostname }} on first run
-  when: has_entry_in_known_hosts_file.rc == 1
+  when: is_known_host.rc != 0       # Meaning error found
   set_fact:
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+# Now, it is safe to gather facts
 - name: Delayed gathering of facts
-  setup:
+  setup:                            # Gathers system facts about the remote host

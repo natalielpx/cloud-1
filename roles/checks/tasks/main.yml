@@ -1,3 +1,6 @@
+# ROLE: Checks
+# Performs basic curls to ensure site is up and running correctly
+
 - name: Curl site (ignore SSL cert)
   uri:
     url: "https://{{ item.0 }}{{ item.1 }}"

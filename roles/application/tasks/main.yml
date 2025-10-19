@@ -1,3 +1,8 @@
+# ROLE: Application
+# Creates and sets up project directory and files
+# Creates secrets (if missing)
+# Launches application
+
 # Create project directory
 - name: Ensure cloud-1 directory exists
   file:
@@ -22,7 +27,7 @@
     src: "docker-compose.yml"
     dest: "{{ project_dir }}"
 
-# Create secrets
+# Create secrets directory
 - name: Ensure secrets directory exists
   file:
     path: "{{ secrets_dir }}"
@@ -36,6 +41,7 @@
     paths: "{{ secrets_dir }}"
   register: files_found
 - name: Create secrets if folder empty
+  when: files_found.examined == 0
   block:
     # Generate private key
     - name: Generate private key for SSL
@@ -58,13 +64,12 @@
         - db-password.txt
         - db-root-password.txt
         - wp-admin-password.txt
-  when: files_found.examined == 0
-        
+
 # Launch app
 - name: Launch cloud-1 site
-  community.docker.docker_compose_v2: # ansible-galaxy collection install community.docker
+  community.docker.docker_compose_v2:     # ansible-galaxy collection install community.docker
     project_src: "{{ project_dir }}"
-    state: present
-    build: always
-    recreate: auto
-    remove_orphans: yes
+    state: present                        # runs application if is not running
+    build: always                         # builds images if files are changed
+    recreate: auto                        # recreates containers if images are changed
+    remove_orphans: yes                   # removes containers not defined by docker-compose.yml

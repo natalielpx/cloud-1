@@ -23,27 +23,30 @@ A memorable domain name would be appreciated, but in this project, we are using 
 - Docker-Compose
 - Volumes, networks
 ## :card_index_dividers: Contents
+### cloud-1.sh
+- Installation of Ansible
+- Creation of inventory
+- Tailored .env files
+### Ansible
+All roles are self-written. They divide the tasks into blocks of clear functionalities.
+#### `inventory.ini`
+Simple structure containing Ansible target hosts
+#### `playbook.yml`
+Main tasks are split into roles
+#### `roles/`
+- Setup: Handle SSH key checks and delay gathering of facts
+- Environment: Install required dependencies
+- Docker: Install and launch dockers
+- Application: Directory preparations, certificate creations, and application deployment
+- Checks: Simple checks to ensure site is properly deployed
 ### Docker Services
 All images used are built by self-written Dockerfiles to fully understand what goes on under the hood when the containers are built.
+#### `roles/application/files/`
 - MariaDB: Installation, initialisation of tables, xatabase Configurations
 - WordPress: Installation, utilisation of WP CLI, configuration for both Wordpress & php
 - phpMyAdmin: Installation, server Configurations
 - NGINX: Installation, serving from multiple containers, TSL Certificates
 - docker-compose.yml: Container dependencies, healthchecks, volumes, networks, secrets, etc.
-### Ansible
-All roles are self-written. They divide the tasks into blocks of clear functionalities.
-- Inventory: Simple structure
-- Playbook: Main tasks are split into roles
-- Roles:
-	- Setup: Handle SSH key checks and delay gathering of facts
-	- Environment: Install required dependencies
-	- Docker: Install and launch dockers
-	- Application: Directory preparations, certificate creations, and application deployment
-	- Checks: Simple checks to ensure site is properly deployed
-### cloud-1.sh
-- Installation of Ansible
-- Creation of inventory
-- Tailored .env files
 ## :building_construction: Deployment
 ```
 # Single server deployment
@@ -54,7 +57,9 @@ All roles are self-written. They divide the tasks into blocks of clear functiona
 ```
 ## :mag: Resources
 ### Ansible
-Documentation: https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html  
+#### Documentation
+https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html  
+#### Tutorials
 SSH: https://youtu.be/-Q4T9wLsvOQ?si=jPiGsBPAb8cHZiIU  
 Playbooks: https://youtu.be/VANub3AhZpI?si=3oHGU1g1kQ_pJzYL  
 Roles: https://youtu.be/tq9sCeQNVYc?si=TQS3q3pfihO37Pji  

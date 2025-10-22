@@ -1,2 +1,2 @@
-project_dir: /home/cloud-1
+project_dir: /home/ansible/cloud-1
 secrets_dir: "{{ project_dir }}/secrets" 

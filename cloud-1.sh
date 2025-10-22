@@ -54,4 +54,4 @@ for arg in "$@"; do
     [ -f "$FILES_DIR/.env.$arg" ] && rm "$FILES_DIR/.env.$arg"
 done
 # INVENTORY FILE
-[ -f "$INVENTORY" ] && rm "INVENTORY"
+[ -f "$INVENTORY" ] && rm "$INVENTORY"

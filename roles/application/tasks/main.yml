@@ -14,9 +14,12 @@
 
 # Copy files to server
 - name: Copy docker service files
+  become: no      # so that ansible doesn't try to sudo in localhost
   synchronize:
     src: services
     dest: "{{ project_dir }}"
+    rsync_path: "sudo rsync"
+    checksum: yes
   delegate_to: localhost
 - name: Copy .env file
   copy:

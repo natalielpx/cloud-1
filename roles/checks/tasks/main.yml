@@ -3,9 +3,11 @@
 
 - name: Curl site (ignore SSL cert)
   uri:
-    url: "https://{{ item.0 }}{{ item.1 }}"
+    url: "https://{{ ansible_default_ipv4.address }}{{ item }}"
     method: GET
     validate_certs: no
   register: curl_result
   failed_when: curl_result.status is defined and curl_result.status != 200
-  loop: "{{ groups['cloud1hosts'] | product(['', '/phpmyadmin']) | list }}"
+  loop:
+    - ""
+    - "/phpmyadmin"

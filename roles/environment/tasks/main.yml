@@ -27,14 +27,18 @@
   raw: apt-get update && apt-get install -y python3-apt aptitude
   changed_when: false       # marks as changed when dependencies are actively being installed
 
-# Enables UFW for SSH and denies all other connections
+# Ensure required packages are installed
 # apt: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
-# ufw: https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html
-- name: Ensure UFW is installed
+- name: Install required packages
   apt:
-    name: ufw
+    name:
+      - ufw
+      - rsync
     state: present          # ensures package is installed but does not update
     update_cache: yes       # ensures package list is up to date before installation
+  
+# Enables UFW for SSH and denies all other connections
+# ufw: https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html
 - name: Set UFW default policy to allow outgoing and deny incoming
   ufw:
     state: enabled          # turns firewall on

@@ -27,7 +27,7 @@ ansible-galaxy collection install community.crypto community.docker community.ge
 # CREATE: inventory
 echo "[cloud1hosts]" > "$INVENTORY"
 for arg in "$@"; do
-	echo "$arg ansible_user=root" >> "$INVENTORY"
+	echo "$arg" >> "$INVENTORY"
 done
 echo "Inventory:	$INVENTORY"
 
@@ -48,7 +48,10 @@ echo "Playbook:	$PLAYBOOK"
 echo "Running:	ansible-playbook -i $INVENTORY $PLAYBOOK"
 ansible-playbook -i "$INVENTORY" "$PLAYBOOK"
 
-# REMOVE GENERATED ENV FILES
+# REMOVE GENERATED FILES
+# ENV FILES
 for arg in "$@"; do
     [ -f "$FILES_DIR/.env.$arg" ] && rm "$FILES_DIR/.env.$arg"
 done
+# INVENTORY FILE
+[ -f "$INVENTORY" ] && rm "INVENTORY"

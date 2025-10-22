@@ -1,0 +1,9 @@
+# ROLE: Users
+# Adds sudo without password to user 'ansible'
+# (that was created by ssh public key added to vm)
+
+- name: add sudoers file
+  copy:
+    src: sudoer_ansible
+    dest: /etc/sudoers.d/ansible
+    mode: 0440

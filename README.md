@@ -50,5 +50,5 @@ https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html
 SSH: https://youtu.be/-Q4T9wLsvOQ?si=jPiGsBPAb8cHZiIU  
 Playbooks: https://youtu.be/VANub3AhZpI?si=3oHGU1g1kQ_pJzYL  
 Roles: https://youtu.be/tq9sCeQNVYc?si=TQS3q3pfihO37Pji  
-#### Tutorial
+## :hammer_and_wrench: Tutorial
 https://tinyurl.com/nlam-cloud-1

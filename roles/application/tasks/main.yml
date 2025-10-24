@@ -43,6 +43,7 @@
   find:
     paths: "{{ secrets_dir }}"
   register: files_found
+# Generate secrets
 - name: Create secrets if folder empty
   when: files_found.examined == 0
   block:

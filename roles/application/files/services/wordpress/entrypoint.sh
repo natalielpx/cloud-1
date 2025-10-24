@@ -39,6 +39,8 @@ if [ ! -f "/var/www/html/wp-config.php" ]; then
 		--post_content="$(cat /tmp/homepage.html)" \
 		--post_status=publish \
 		--allow-root
+
+	wp option update comment_registration 0
 fi
 
 # Unset secrets

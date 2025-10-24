@@ -14,10 +14,11 @@ fi
 # INSTALL: ansible
 if ! command -v ansible >/dev/null 2>&1; then
     echo "Installing Ansible...."
-	if ! pipx install ansible-core; then
+	if ! pip install ansible-core; then
 		echo "ERROR: Failed to install Ansible"
 		exit 1
 	fi
+	export PATH=$PATH:~/.local/bin
 fi
 echo "Ansible:	$(ansible --version | head -n 1)"
 

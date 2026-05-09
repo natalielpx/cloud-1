@@ -1,0 +1,63 @@
+# Ensures docker is installed and launched
+# https://docs.docker.com/engine/install/ubuntu/
+
+- name: Check if Docker is installed
+  ansible.builtin.command: docker --version
+  register: docker_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Install Docker
+  when: docker_check.rc != 0
+  become: true
+  block:
+    - name: Stop docker and containerd (even if supposedly absent)
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: stopped
+      ignore_errors: true
+      loop:
+        - docker
+        - containerd
+    - name: Remove conflicting Docker-related packages
+      ansible.builtin.apt:
+        name:
+          - containerd
+          - docker.io
+          - docker-compose
+          - docker-compose-v2
+          - docker-doc
+          - podman-docker
+          - runc
+        state: absent
+        purge: true          # removes config files
+        autoremove: true     # removes unused dependency packages
+    - name: Remove old Docker repository
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /var/lib/docker
+        - /var/lib/containerd
+        - /etc/apt/sources.list.d/docker.sources
+        - /etc/apt/keyrings/docker.asc
+    # https://docs.docker.com/engine/install/ubuntu/#uninstall-docker-engine
+    # https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/file_module.html
+    # https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_loops.html
+    - name: Install Docker
+      ansible.builtin.apt:
+        name:
+          - containerd.io
+          - docker-ce
+          - docker-ce-cli
+          - docker-buildx-plugin
+          - docker-compose-plugin
+        update_cache: true       # ensures package list is up to date before installation
+        state: present
+
+- name: Launch Docker
+  ansible.builtin.systemd_service:
+    name: docker
+    state: started      # starts Docker if not started
+    enabled: true        # set to start on boot
+  become: true

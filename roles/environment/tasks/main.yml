@@ -22,7 +22,7 @@
 
 - name: Ensure apt module dependencies are installed - python3-apt, aptitude
   ansible.builtin.raw: apt-get update && apt-get install -y python3-apt aptitude
-  become: yes
+  become: true
   changed_when: false       # marks as changed when dependencies are actively being installed
 # https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/raw_module.html
 
@@ -33,7 +33,7 @@
       - rsync
     state: present          # ensures package is installed but does not update
     update_cache: yes       # ensures package list is up to date before installation
-  become: yes
+  become: true
 # https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/apt_module.html
 
 - name: Enable UFW for SSH and denies all other connections
@@ -42,5 +42,5 @@
     default: deny           # sets default rule for incoming traffic to `deny`
     rule: allow             # opens criteria-matching traffic
     name: OpenSSH           # adds OpenSSH as allowed traffic
-  become: yes
+  become: true
 # https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html

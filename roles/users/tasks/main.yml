@@ -6,5 +6,5 @@
     src: sudoer_ansible
     dest: /etc/sudoers.d/ansible
     mode: 0440
-  become: yes
+  become: true
 # https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/copy_module.html

@@ -1,0 +1,134 @@
+name: cloud-1
+
+services:
+
+  mariadb:
+    build: ./services/mariadb
+    image: mariadb-image
+    container_name: mariadb
+    restart: unless-stopped
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - docker-network
+    expose:
+      - "3306"
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_HOST: ${DB_HOST}
+    secrets:
+      - db-password
+      - db-root-password
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "--silent"]
+      start_period: 5s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  wordpress:
+    build: ./services/wordpress
+    image: wordpress-image
+    container_name: wordpress
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - wp:/var/www/html
+    networks:
+      - docker-network
+    expose:
+      - "9000"
+    environment:
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_HOST: ${DB_HOST}
+      DB_PASSWORD_FILE: /run/secrets/db-password
+      WP_EMAIL: ${WP_EMAIL}
+      WP_TITLE: ${WP_TITLE}
+      WP_ADMIN: ${WP_ADMIN}
+      DOMAIN_NAME: ${DOMAIN_NAME}
+    secrets:
+      - db-password
+      - wp-admin-password
+    healthcheck:
+      test: ["CMD", "php-fpm8.2", "-t"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  phpmyadmin:
+    build: ./services/phpmyadmin
+    image: phpmyadmin-image
+    container_name: phpmyadmin
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    restart: always
+    volumes:
+      - pma:/var/www/phpmyadmin
+    networks:
+      - docker-network
+    expose:
+      - "9000"
+    environment:
+      PMA_USER: ${DB_USER}
+      PMA_HOST: ${DB_HOST}
+    secrets:
+      - blowfish
+      - db-password
+    healthcheck:
+      test: ["CMD", "php-fpm8.2", "-t"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  nginx:
+    build: ./services/nginx
+    image: nginx-image
+    container_name: nginx
+    depends_on:
+      wordpress:
+        condition: service_healthy 
+    restart: unless-stopped
+    volumes:
+      - wp:/var/www/html
+      - pma:/var/www/phpmyadmin
+    ports:
+      - "443:443"
+    secrets:
+      - server-crt
+      - server-key
+    networks: 
+      - docker-network
+
+volumes:
+  db:
+  wp:
+  pma:
+
+networks:
+  docker-network:
+
+secrets:
+  blowfish:
+    file: ./secrets/blowfish.txt
+  db-password:
+    file: ./secrets/db-password.txt
+  db-root-password:
+    file: ./secrets/db-root-password.txt
+  server-crt:
+    file: ./secrets/server.crt
+  server-key:
+    file: ./secrets/server.key
+  wp-admin-password:
+    file: ./secrets/wp-admin-password.txt
+
+
+# docker stop `docker ps -qa`
+# docker rm `docker ps -qa`
+# docker rmi -f `docker images -qa`
+# docker volume rm $(docker volume ls -q)
+# docker network rm `docker network ls -q`

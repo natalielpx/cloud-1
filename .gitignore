@@ -1,0 +1,6 @@
+secrets/
+.env
+
+.dockerignore
+
+.DS_Store

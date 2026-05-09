@@ -1,0 +1,46 @@
+# Checks essential prerequisites and installs required dependencies
+
+- name: Check that OS is Ubuntu-based
+  ansible.builtin.assert:
+    that: ansible_facts['distribution'] == "Ubuntu"
+    fail_msg: "This playbook requires a Ubuntu-based OS"
+    success_msg: "Ubuntu OS Detected. Proceeding with playbook..."
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/assert_module.html
+
+- name: Check if Python is installed
+  ansible.builtin.command: python3 --version
+  register: python_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Fail if Python is missing
+  ansible.builtin.fail:
+    msg: "This playbook requires Python 3"
+  when: python_check.rc != 0
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/fail_module.html
+# https://docs.ansible.com/projects/ansible/latest/reference_appendices/common_return_values.html#rc
+
+- name: Ensure apt module dependencies are installed - python3-apt, aptitude
+  ansible.builtin.raw: apt-get update && apt-get install -y python3-apt aptitude
+  become: yes
+  changed_when: false       # marks as changed when dependencies are actively being installed
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/raw_module.html
+
+- name: Ensure required packages are installed
+  ansible.builtin.apt:
+    name:
+      - ufw
+      - rsync
+    state: present          # ensures package is installed but does not update
+    update_cache: yes       # ensures package list is up to date before installation
+  become: yes
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/apt_module.html
+
+- name: Enable UFW for SSH and denies all other connections
+  community.general.ufw:
+    state: enabled
+    default: deny           # sets default rule for incoming traffic to `deny`
+    rule: allow             # opens criteria-matching traffic
+    name: OpenSSH           # adds OpenSSH as allowed traffic
+  become: yes
+# https://docs.ansible.com/ansible/latest/collections/community/general/ufw_module.html

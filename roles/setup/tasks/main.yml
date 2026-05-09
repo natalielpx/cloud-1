@@ -1,0 +1,33 @@
+# Ensures target host’s SSH key is known before connecting and gathering facts
+
+- name: Fetch host key from virtual instance
+  local_action: ansible.builtin.command
+  args:
+    cmd: "ssh-keyscan -t ed25519 {{ inventory_hostname }}"
+  register: ssh_ed25519
+  changed_when: false
+# https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_delegation.html
+# https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_variables.html#registering-variables
+# https://man.archlinux.org/man/ssh-keyscan.1.en
+
+- name: Save host key
+  ansible.builtin.set_fact:
+    host_key: "{{ ssh_ed25519.stdout_lines[1] }}"
+# https://docs.ansible.com/projects/ansible/latest/reference_appendices/special_variables.html
+
+# - name: Print host key obtained
+#   ansible.builtin.debug:
+#     var: host_key
+
+- name:  Ensure {{ inventory_hostname }} known by control node
+  local_action: ansible.builtin.known_hosts
+  args:
+    name: "{{ inventory_hostname }}"
+    path: "{{ known_hosts_path }}"
+    key: "{{ host_key }}"
+    state: present
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/known_hosts_module.html
+
+- name: Gather facts
+  ansible.builtin.setup:
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/setup_module.html

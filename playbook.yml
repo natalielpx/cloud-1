@@ -1,0 +1,6 @@
+- name: cloud-1
+  hosts: cloud1hosts
+  gather_facts: no
+  roles:
+    - setup
+  

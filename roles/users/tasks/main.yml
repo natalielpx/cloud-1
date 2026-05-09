@@ -1,0 +1,10 @@
+# Adds sudo without password to user 'ansible'
+# (that was created by ssh public key added to vm)
+
+- name: Add sudoers file
+  ansible.builtin.copy:
+    src: sudoer_ansible
+    dest: /etc/sudoers.d/ansible
+    mode: 0440
+  become: yes
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/copy_module.html

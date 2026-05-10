@@ -1,0 +1,8 @@
+- name: Launch site
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "{{ project_dir }}"
+    state: present                                                  # runs application if is not running
+    build: "{{ 'always' if copied_files.changed else 'policy' }}"   # rebuilds when source files changed
+    recreate: auto                                                  # recreates containers if images are changed
+    remove_orphans: yes                                             # removes containers not defined by docker-compose.yml

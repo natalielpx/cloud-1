@@ -1,0 +1,13 @@
+project_name:       "cloud-1"
+
+home_dir:           "/home/ansible"
+project_dir:        "{{ home_dir }}/{{ project_name }}"
+
+cloud_1_dir:        "{{ playbook_dir}}/roles/application/files/{{ project_name }}"
+secrets_dir:        "{{ cloud_1_dir }}/secrets"
+blowfish_file:      "{{ secrets_dir }}/blowfish.txt"
+db_pwd_file:        "{{ secrets_dir }}/db-password.txt"
+db_root_pwd_file:   "{{ secrets_dir }}/db-root-password.txt"
+server_crt_file:    "{{ secrets_dir }}/server.crt"
+server_key_file:    "{{ secrets_dir }}/server.key"
+wp_admin_pwd_file:  "{{ secrets_dir }}/wp-admin-password.txt"

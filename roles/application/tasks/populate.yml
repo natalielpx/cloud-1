@@ -1,0 +1,23 @@
+- name: Copy files into {{ inventory_hostname }}
+  become: true
+  ansible.builtin.copy:
+    src: "cloud-1"     # if does not end with /, the directory itself and its contents is copied
+    dest: "/home/ansible/"
+  register: copied_files
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/copy_module.html#examples
+
+- name: Add {{ inventory_hostname }} as domain name in .env
+  become: true
+  ansible.builtin.lineinfile:
+    path: "{{ project_dir }}/.env"
+    regexp: '^DOMAIN_NAME='
+    line: "DOMAIN_NAME={{ inventory_hostname }}"
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/lineinfile_module.html
+
+- name: Set ownership
+  become: true
+  ansible.builtin.file:
+    path: "{{ project_dir }}"
+    owner: www-data
+    group: www-data
+    recurse: yes

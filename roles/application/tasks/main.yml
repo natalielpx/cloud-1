@@ -1,0 +1,15 @@
+- name: Create secrets locally
+  ansible.builtin.include_tasks:
+    file: secrets.yml
+
+- name: Populate project directory
+  ansible.builtin.include_tasks:
+    file: populate.yml
+
+- name: Launch project
+  ansible.builtin.include_tasks:
+    file: launch.yml
+
+- name: Curl website
+  ansible.builtin.include_tasks:
+    file: curl.yml

@@ -38,7 +38,6 @@ RUN wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-english.tar.gz &
 # CONFIGURATION
 COPY conf/www.conf /etc/php/8.2/fpm/pool.d/www.conf
 COPY conf/config.inc.php /tmp/phpmyadmin/config.inc.php
-COPY test.php /tmp/phpmyadmin/test.php
 
 # ENTRYPOINT SCRIPT
 COPY entrypoint.sh /docker-entrypoint.d/entrypoint.sh

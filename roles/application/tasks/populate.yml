@@ -1,10 +1,14 @@
-- name: Copy files into control machine
-  become: true
-  ansible.builtin.copy:
-    src: "cloud-1"     # if does not end with /, the directory itself and its contents is copied
-    dest: "/home/ansible/"
-  register: copied_files
-# https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/copy_module.html#examples
+- name: Sync files
+  ansible.posix.synchronize:
+    src: .
+    dest: "{{ project_dir }}"
+    archive: false    # (Disables) Mirrors the rsync archive flag, enables recursive, links, perms, times, owner, group flags, and -D.
+    checksum: true    # Skip based on checksum, rather than mod-time & size;
+    # delete: true      # Delete files in dest that do not exist (after transfer, not before) in the src path.
+    recursive: true   # Recurse into directories.
+    times: false      # (Do not) Preserve modification times.
+  register: sync_result
+# https://docs.ansible.com/projects/ansible/latest/collections/ansible/posix/synchronize_module.html
 
 - name: Add public IP as domain name in .env
   become: true

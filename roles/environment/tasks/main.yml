@@ -32,7 +32,7 @@
       - ufw
       - rsync
     state: present          # ensures package is installed but does not update
-    update_cache: yes       # ensures package list is up to date before installation
+    update_cache: true       # ensures package list is up to date before installation
   become: true
 # https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/apt_module.html
 

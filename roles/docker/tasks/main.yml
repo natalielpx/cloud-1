@@ -44,6 +44,16 @@
     # https://docs.docker.com/engine/install/ubuntu/#uninstall-docker-engine
     # https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/file_module.html
     # https://docs.ansible.com/projects/ansible/latest/playbook_guide/playbooks_loops.html
+    - name: Add repo using key from URL
+      ansible.builtin.deb822_repository:
+        name: docker
+        types: deb
+        uris: https://download.docker.com/linux/ubuntu
+        suites: "{{ ansible_facts['distribution_release'] }}"
+        components: stable
+        architectures: amd64
+        signed_by: https://download.docker.com/linux/ubuntu/gpg
+    # https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/deb822_repository_module.html
     - name: Install Docker
       ansible.builtin.apt:
         name:
@@ -59,5 +69,5 @@
   ansible.builtin.systemd_service:
     name: docker
     state: started      # starts Docker if not started
-    enabled: true        # set to start on boot
+    enabled: true       # set to start on boot
   become: true

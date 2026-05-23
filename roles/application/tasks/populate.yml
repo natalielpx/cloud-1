@@ -1,4 +1,4 @@
-- name: Copy files into {{ inventory_hostname }}
+- name: Copy files into control machine
   become: true
   ansible.builtin.copy:
     src: "cloud-1"     # if does not end with /, the directory itself and its contents is copied
@@ -6,7 +6,7 @@
   register: copied_files
 # https://docs.ansible.com/projects/ansible/latest/collections/ansible/builtin/copy_module.html#examples
 
-- name: Add {{ inventory_hostname }} as domain name in .env
+- name: Add public IP as domain name in .env
   become: true
   ansible.builtin.lineinfile:
     path: "{{ project_dir }}/.env"
@@ -20,4 +20,4 @@
     path: "{{ project_dir }}"
     owner: www-data
     group: www-data
-    recurse: yes
+    recurse: true

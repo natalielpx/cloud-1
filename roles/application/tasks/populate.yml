@@ -7,6 +7,9 @@
     # delete: true      # Delete files in dest that do not exist (after transfer, not before) in the src path.
     recursive: true   # Recurse into directories.
     times: false      # (Do not) Preserve modification times.
+    rsync_opts:
+      - "--exclude=.env"
+      - "--exclude=.vault_pass"
   register: sync_result
 # https://docs.ansible.com/projects/ansible/latest/collections/ansible/posix/synchronize_module.html
 

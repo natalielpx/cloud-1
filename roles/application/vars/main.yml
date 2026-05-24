@@ -1,6 +1,6 @@
 project_name:       "cloud-1"
 
-home_dir:           "/home/ansible"
+home_dir:           "/home/cloud1"
 project_dir:        "{{ home_dir }}/{{ project_name }}"
 
 cloud_1_dir:        "{{ playbook_dir}}/roles/application/files"

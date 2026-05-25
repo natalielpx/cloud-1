@@ -12,7 +12,7 @@
 
 - name: Save host key
   ansible.builtin.set_fact:
-    host_key: "{{ ssh_ed25519.stdout_lines[0] }}"
+    host_key: "{{ ssh_ed25519.stdout_lines | select('match', '^[^#].*ed25519.*') | first }}"
 # https://docs.ansible.com/projects/ansible/latest/reference_appendices/special_variables.html
 
 - name:  Ensure {{ inventory_hostname }} known by control node

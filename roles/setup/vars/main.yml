@@ -1,1 +1,2 @@
 known_hosts_path: ~/.ssh/known_hosts
+# ssh_key_line_index: "{{ lookup('env', 'SSH_KEY_LINE_INDEX') | default('1') | int }}"

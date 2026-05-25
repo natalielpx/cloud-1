@@ -3,7 +3,7 @@
 
 - name: Add sudoers file
   ansible.builtin.copy:
-    src: .
+    src: sudoer_cloud1
     dest: /etc/sudoers.d/cloud1
     mode: '440'
   become: true

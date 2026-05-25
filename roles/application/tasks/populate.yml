@@ -1,4 +1,5 @@
 - name: Sync files
+  become: true
   ansible.posix.synchronize:
     src: .
     dest: "{{ project_dir }}"

@@ -1,0 +1,29 @@
+---
+- name: Clean remote VM
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Stop and remove all containers
+      community.docker.docker_compose_v2:
+        project_src: ~/cloud-1
+        state: absent
+        remove_volumes: true
+      ignore_errors: true
+
+    - name: Remove all remaining containers (force)
+      shell: docker rm -f $(docker ps -aq) 2>/dev/null || true
+
+    - name: Remove all volumes
+      shell: docker volume rm $(docker volume ls -q) 2>/dev/null || true
+
+    - name: Remove all images
+      shell: docker rmi -f $(docker images -q) 2>/dev/null || true
+
+    - name: Remove all networks (except defaults)
+      shell: docker network prune -f
+
+    - name: Remove cloud-1 directory
+      ansible.builtin.file:
+        path: ~/cloud-1
+        state: absent

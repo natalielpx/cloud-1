@@ -4,3 +4,4 @@ secrets/
 .dockerignore
 
 .DS_Store
+.vault_pass

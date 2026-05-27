@@ -9,6 +9,6 @@ for arg in "$@"; do
 done
 echo "Inventory:	$INVENTORY"
 
-ansible-playbook clean.yml -i inventory.ini
+ansible-playbook clean.yml -i inventory.ini --vault-password-file .vault_pass
 
 [ -f "$INVENTORY" ] && rm "$INVENTORY"

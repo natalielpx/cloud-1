@@ -4,6 +4,7 @@ set -u
 # VARIABLES
 INVENTORY="./inventory.ini"
 PLAYBOOK="./playbook.yml"
+ANSIBLE_VAULT_PASSWORD_FILE=.vault_pass 
 
 if [ $# -eq 0 ]; then
 	echo "ERROR: Please enter server IP"

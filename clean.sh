@@ -3,6 +3,8 @@
 INVENTORY="./inventory.ini"
 PLAYBOOK="./playbook.yml"
 
+export PATH=$PATH:~/.local/bin
+
 echo "[cloud1hosts]" > "$INVENTORY"
 for arg in "$@"; do
 	echo "$arg" >> "$INVENTORY"
